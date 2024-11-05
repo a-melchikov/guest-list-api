@@ -4,7 +4,7 @@ from sqlalchemy import Integer, func
 from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 
-from config import settings
+from app.config import settings
 
 
 DATABASE_URL = settings.get_db_url()
@@ -24,10 +24,18 @@ async_session_maker = async_sessionmaker(
 class Base(AsyncAttrs, DeclarativeBase):
     __abstract__ = True
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+        autoincrement=True,
+        index=True,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(),
+    )
     updated_at: Mapped[datetime] = mapped_column(
-        server_default=func.now(), onupdate=func.now()
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     @declared_attr.directive
