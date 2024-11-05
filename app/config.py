@@ -1,6 +1,9 @@
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.logger_config import get_logger
+
+logger = get_logger(__name__)
 
 BASE_DIR = Path(__file__).parent
 ENV_FILE_PATH = BASE_DIR / ".env"
@@ -19,6 +22,11 @@ class Settings(BaseSettings):
     DB_PORT: int
     DB_NAME: str
     DB_ECHO: bool
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        logger.info("Настройки успешно загружены:")
+        logger.info(self.model_dump())
 
     def get_db_url(self):
         return (
