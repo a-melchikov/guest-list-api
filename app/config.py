@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     DB_HOST: str
     DB_PORT: int
     DB_NAME: str
+    DB_ECHO: bool
 
     def get_db_url(self):
         return (
