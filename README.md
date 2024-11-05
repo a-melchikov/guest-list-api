@@ -1,0 +1,4 @@
+alembic
+sqlalchemy
+fastapi
+postgresql
