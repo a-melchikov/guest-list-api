@@ -9,8 +9,16 @@ from config import settings
 
 DATABASE_URL = settings.get_db_url()
 
-engine = create_async_engine(url=DATABASE_URL)
-async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
+engine = create_async_engine(
+    url=DATABASE_URL,
+    echo=settings.DB_ECHO,
+)
+async_session_maker = async_sessionmaker(
+    engine,
+    autoflush=False,
+    autocommit=False,
+    expire_on_commit=False,
+)
 
 
 class Base(AsyncAttrs, DeclarativeBase):
