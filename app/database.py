@@ -1,8 +1,19 @@
+from typing import Any
 from datetime import datetime
 
 from sqlalchemy import Integer, func
-from sqlalchemy.orm import DeclarativeBase, declared_attr, Mapped, mapped_column
-from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    declared_attr,
+    Mapped,
+    mapped_column,
+    class_mapper,
+)
+from sqlalchemy.ext.asyncio import (
+    AsyncAttrs,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from app.config import settings
 from app.logger_config import get_logger
@@ -58,3 +69,9 @@ def connection(method):
                 await session.close()
 
     return wrapper
+
+
+def to_dict(self) -> dict[Any, Any]:
+    """Универсальный метод для конвертации объекта SQLAlchemy в словарь"""
+    columns = class_mapper(self.__class__).columns
+    return {column.key: getattr(self, column.key) for column in columns}
