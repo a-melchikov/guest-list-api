@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String, Integer
+from sqlalchemy import String, Integer, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -14,8 +14,12 @@ class Table(Base):
     num: Mapped[int] = mapped_column(Integer, nullable=False)
     description: Mapped[str | None] = mapped_column(String(255))
     max_guests: Mapped[int | None] = mapped_column(Integer)
-    guests_def: Mapped[int | None] = mapped_column(Integer, default=0)
-    guests_now: Mapped[int | None] = mapped_column(Integer, default=0)
+    guests_def: Mapped[int | None] = mapped_column(
+        Integer, server_default=text("0"), default=0
+    )
+    guests_now: Mapped[int | None] = mapped_column(
+        Integer, server_default=text("0"), default=0
+    )
 
     # Связь с гостями (один-ко-многим)
     guests: Mapped[list[GuestList]] = relationship(
