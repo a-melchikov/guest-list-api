@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     DB_ECHO: bool
     ADMIN_NAME: str
     ADMIN_PASSWORD: str
+    SECRET_KEY: str
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

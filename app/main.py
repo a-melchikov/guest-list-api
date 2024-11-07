@@ -1,6 +1,6 @@
+import asyncio
 import uvicorn
 import sqladmin
-from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -13,13 +13,7 @@ from app.database import engine
 from .admin import GuestListAdmin, TableAdmin
 from .auth import AdminAuth
 from .create_admin_user import create_admin_user
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await create_admin_user()
-    yield
-
+from .config import settings
 
 templates = Jinja2Templates(directory="templates")
 
@@ -30,7 +24,7 @@ main_app = FastAPI(
 admin = sqladmin.Admin(
     app=main_app,
     engine=engine,
-    authentication_backend=AdminAuth(secret_key="your_secret_key"),
+    authentication_backend=AdminAuth(secret_key=settings.SECRET_KEY),
 )
 
 admin.add_view(GuestListAdmin)
@@ -46,14 +40,15 @@ async def login_page(request: Request):
 
 @main_app.post("/login", include_in_schema=False)
 async def login_post(request: Request):
-    auth_backend = AdminAuth(secret_key="your_secret_key")
+    auth_backend = AdminAuth(secret_key=settings.SECRET_KEY)
     is_authenticated = await auth_backend.login(request)
     if is_authenticated:
-        return RedirectResponse(url="/admin")
+        return RedirectResponse(url="/admin/")
     return templates.TemplateResponse(
         "login.html", {"request": request, "error": "Invalid credentials"}
     )
 
 
 if __name__ == "__main__":
+    asyncio.run(create_admin_user())
     uvicorn.run("app.main:main_app", reload=True)

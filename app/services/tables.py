@@ -48,8 +48,10 @@ class TableService(BaseService):
     async def get_guests_by_table_id(
         self,
         table_id: int,
+        num: int | None = None,
+        nums: list[int] | None = None,
     ) -> list[GuestListResponseSchema] | None:
-        tables = await self.repo.get_guests_by_table_id(table_id)
+        tables = await self.repo.get_guests_by_table_id(table_id, num, nums)
         return tables
 
     async def get_table_stats(

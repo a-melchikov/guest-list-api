@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -96,14 +97,15 @@ class GuestListRepository(SQLAlchemyRepository):
         Обновление информации о госте.
         """
         async with async_session_maker() as session:
-            guest = await session.execute(
+            result = await session.execute(
                 select(cls.model)
                 .options(selectinload(cls.model.table))
                 .filter_by(id=guest_id)
             )
-            guest = guest.scalars().first()
+            guest = result.scalars().first()
 
             if guest:
+                guest.updated_at = datetime.utcnow()
                 for key, value in values.items():
                     setattr(guest, key, value)
                 await session.commit()

@@ -7,6 +7,7 @@ __all__ = [
     "TableUpdateSchema",
     "TableStatsResponseSchema",
     "TableResponseSchema",
+    "ErrorResponseSchema",
 ]
 
 from .guest_lists import (
@@ -21,3 +22,4 @@ from .tables import (
     TableUpdateSchema,
     TableStatsResponseSchema,
 )
+from .error import ErrorResponseSchema

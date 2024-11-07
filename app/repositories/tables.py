@@ -105,6 +105,8 @@ class TableRepository(SQLAlchemyRepository):
     async def get_guests_by_table_id(
         cls,
         table_id: int,
+        num: int | None = None,
+        nums: list[int] | None = None,
     ) -> list[GuestListResponseSchema] | None:
         """
         Получение гостей за столом по table_id с информацией о столе.
@@ -115,6 +117,7 @@ class TableRepository(SQLAlchemyRepository):
                 .filter_by(id=table_id)
                 .options(selectinload(cls.model.guests))
             )
+            query = await cls.get_query_with_check_nums(query, num, nums)
             result = await session.execute(query)
             table = result.scalar_one_or_none()
 
