@@ -49,6 +49,10 @@ async def login_post(request: Request):
     )
 
 
+async def start_application():
+    await create_admin_user()
+    uvicorn.run("app.main:main_app", host="0.0.0.0", port=8000, reload=True)
+
+
 if __name__ == "__main__":
-    asyncio.run(create_admin_user())
-    uvicorn.run("app.main:main_app", reload=True)
+    asyncio.run(start_application())

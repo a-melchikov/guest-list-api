@@ -33,3 +33,7 @@ async def create_admin_user():
         session.add(new_admin)
         await session.commit()
         logger.info(f"Админ-пользователь {new_admin.username} создан.")
+
+
+if __name__ == "__main__":
+    asyncio.run(create_admin_user())

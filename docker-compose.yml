@@ -1,4 +1,24 @@
+version: '3.9'
+
 services:
+  app:
+    build: .
+    command: |
+      bash -c "poetry run alembic -c app/alembic.ini upgrade head && poetry run python -m app.main"
+    container_name: guest-list-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - guest_list_network
+
   db:
     image: postgres:latest
     restart: always
@@ -10,6 +30,13 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - guest_list_network
 
 volumes:
   postgres_data:
+
+
+networks:
+  guest_list_network:
+    driver: bridge

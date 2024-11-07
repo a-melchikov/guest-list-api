@@ -1,36 +1,54 @@
-Libraries:
-alembic
-sqlalchemy
-fastapi
-postgresql
-pydantic
-pydantic-settings
+# Guest List API
 
-env example:
+Это приложение представляет собой API для управления гостевыми списками.
+
+## Стек технологий
+
+- **FastAPI**
+- **SQLAlchemy**
+- **Alembic**
+- **PostgreSQL**
+- **Pydantic**
+- **Pydantic Settings**
+- **Docker**
+- **SQLAdmin**
+
+## Установка и запуск через Docker
+
+Клонируйте репозиторий:
+
+```bash
+git clone https://github.com/your-username/guest-list-api.git
+cd guest-list-api
+```
+
+Создайте файл .env в корне проекта, и укажите параметры для подключения к базе данных PostgreSQL:
 
 ```env
 DB_HOST=127.0.0.1
-DB_PORT=5432
+DB_PORT=5433
 DB_NAME=guestbook_db
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_ECHO=False
+ADMIN_NAME=admin
+ADMIN_PASSWORD=foo
+SECRET_KEY=JDoQxz9T0wt6NQ7bZ_-y0Jb0tQj_2Yp9U0EUSz2hxj6oCJtBQFgM9FoeF0ZqAx9I
 ```
 
-docker:
+Для запуска приложения и всех необходимых сервисов, выполните команду:
 
 ```bash
 docker compose up --build
 ```
 
-migration create:
+## Доступ к приложению
 
-```bash
-alembic -c app/alembic.ini revision --autogenerate -m "Create ..."
-```
+Приложение будет работать по следующему адресу:
 
-migration update:
+- API: <http://127.0.0.1:8000/docs>
+- Административная панель: <http://127.0.0.1:8000/admin>
 
-```bash
-alembic -c app/alembic.ini upgrade head
-```
+Логин: admin
+
+Пароль: foo
