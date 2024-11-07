@@ -18,7 +18,7 @@
 Клонируйте репозиторий:
 
 ```bash
-git clone https://github.com/your-username/guest-list-api.git
+git clone https://github.com/a-melchikov/guest-list-api.git
 cd guest-list-api
 ```
 
