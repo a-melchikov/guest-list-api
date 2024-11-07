@@ -44,8 +44,6 @@ class GuestListRepository(SQLAlchemyRepository):
             result = await session.execute(query)
             table_with_guests = result.scalar_one_or_none()
 
-            guests_def = await table_with_guests.guests_def
-            guests_now = await table_with_guests.guests_now
             guest_links = [
                 f"/api/guest_lists/{guest.id}" for guest in table_with_guests.guests
             ]
@@ -53,8 +51,6 @@ class GuestListRepository(SQLAlchemyRepository):
             table_data = to_dict(table_with_guests)
             table_data.update(
                 {
-                    "guests_def": guests_def,
-                    "guests_now": guests_now,
                     "guests": guest_links,
                 }
             )

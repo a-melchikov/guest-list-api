@@ -49,16 +49,10 @@ class TableRepository(SQLAlchemyRepository):
 
     @classmethod
     async def format_table_data(cls, table: Table) -> TableResponseSchema:
-        guests_def = await table.guests_def
-        guests_now = await table.guests_now
-        guest_links = [f"/api/guest_lists/{guest.id}" for guest in table.guests]
-
         table_data = to_dict(table)
         table_data.update(
             {
-                "guests_def": guests_def,
-                "guests_now": guests_now,
-                "guests": guest_links,
+                "guests": [f"/api/guest_lists/{guest.id}" for guest in table.guests],
             }
         )
         return TableResponseSchema(**table_data)
@@ -135,8 +129,8 @@ class TableRepository(SQLAlchemyRepository):
                             num=table.num,
                             description=table.description,
                             max_guests=table.max_guests,
-                            guests_def=await table.guests_def,
-                            guests_now=await table.guests_now,
+                            guests_def=table.guests_def,
+                            guests_now=table.guests_now,
                             guests=[
                                 f"/api/guest_lists/{guest.id}" for guest in table.guests
                             ],
@@ -171,15 +165,12 @@ class TableRepository(SQLAlchemyRepository):
 
     @staticmethod
     async def _create_table_stats_response(record) -> TableStatsResponseSchema:
-        booking = await record.guests_def
-        guest_is_present = await record.guests_now
-
         return TableStatsResponseSchema(
             id=record.id,
             num=record.num,
             max_guests=record.max_guests,
-            booking=booking,
-            guest_is_present=guest_is_present,
+            booking=record.guests_def,
+            guest_is_present=record.guests_now,
         )
 
 
