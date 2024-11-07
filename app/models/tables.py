@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String, Integer, select, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy import String, Integer, CheckConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database import Base, async_session_maker
+from app.database import Base
 from .guest_lists import GuestList
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class Table(Base):
-    num: Mapped[int] = mapped_column(Integer, nullable=False)
+    num: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
     description: Mapped[str | None] = mapped_column(String(255))
     max_guests: Mapped[int | None] = mapped_column(Integer)
 
@@ -22,43 +22,15 @@ class Table(Base):
         cascade="all, delete-orphan",
     )
 
-    @validates("guests")
-    def validate_guests_def(self, key, guests):
-        if self.max_guests is not None and len(guests) > self.max_guests:
-            raise ValueError(
-                f"Количество гостей ({len(guests)}) не может превышать максимальное значение ({self.max_guests})."
-            )
-        return guests
+    guests_def: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    guests_now: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
-    @property
-    async def guests_def(self):
-        """
-        Возвращает количество гостей, которых ожидают за столом.
-        """
-        async with async_session_maker() as session:
-            query = (
-                select(func.count())
-                .select_from(GuestList)
-                .where(GuestList.table_id == self.id)
-            )
-            result = await session.execute(query)
-            guests_def = result.scalar_one_or_none()
-            return guests_def or 0
-
-    @property
-    async def guests_now(self):
-        """
-        Возвращает количество гостей, которые сейчас за столом.
-        """
-        async with async_session_maker() as session:
-            query = (
-                select(func.count())
-                .select_from(GuestList)
-                .where(GuestList.table_id == self.id, GuestList.is_present.is_(True))
-            )
-            result = await session.execute(query)
-            guests_now = result.scalar_one_or_none()
-            return guests_now or 0
+    __table_args__ = (
+        CheckConstraint(
+            "guests_now <= max_guests",
+            name="check_guests_now_less_than_or_equal_to_max_guests",
+        ),
+    )
 
     def __str__(self) -> str:
         return (
